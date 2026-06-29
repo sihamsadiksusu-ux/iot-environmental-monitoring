@@ -55,6 +55,7 @@ publisher.py                    Simulates sensors and publishes MQTT messages
 subscriber.py                   Receives MQTT messages and stores data
 dashboard.py                    Streamlit monitoring dashboard
 requirements.txt                Required Python libraries
+sql/init.sql                    Creates the MySQL measurements table
 ```
 
 ## How to Run the Project
