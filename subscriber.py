@@ -1,4 +1,5 @@
 import json
+import time
 import paho.mqtt.client as mqtt
 import mysql.connector
 from pymongo import MongoClient
@@ -61,7 +62,14 @@ def save_to_neo4j(data):
     with neo4j_driver.session() as session:
         session.run(query, **data)
 
+message_count = 0
+total_processing_time = 0
+
 def on_message(client, userdata, message):
+    global message_count, total_processing_time
+
+    start_time = time.perf_counter()
+
     data = json.loads(message.payload.decode())
 
     print("Received:", data)
@@ -70,7 +78,18 @@ def on_message(client, userdata, message):
     save_to_mongodb(data)
     save_to_neo4j(data)
 
+    end_time = time.perf_counter()
+
+    processing_time = end_time - start_time
+
+    message_count += 1
+    total_processing_time += processing_time
+
+    average_time = total_processing_time / message_count
+
     print("Saved in MySQL, MongoDB, and Neo4j")
+    print(f"Message {message_count} processing time: {processing_time:.4f} seconds")
+    print(f"Average processing time: {average_time:.4f} seconds")
 
 broker = "localhost"
 port = 1883
